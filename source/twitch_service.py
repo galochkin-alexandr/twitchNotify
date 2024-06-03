@@ -35,3 +35,12 @@ class TwitchService:
             if len(data["data"]) > 0:
                 return True
         return False
+
+    def check_existing_streamer(self, streamer_name):
+        headers = {"Client-ID": self.twitch_id, "Authorization": f"Bearer {self.twitch_token}"}
+        url = f"https://api.twitch.tv/helix/users?login={streamer_name}"
+        response = requests.get(url, headers=headers)
+
+        if response.status_code == 200:
+            return True
+        return False

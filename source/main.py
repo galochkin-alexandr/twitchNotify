@@ -1,5 +1,3 @@
-import asyncio
-import threading
 from threading import Thread
 
 import telebot
@@ -48,10 +46,6 @@ def get_text_messages(message):
             if users_action[user_id] == 'I':
                 executor.subscribe_to_streamer(message.text, user_id)
                 users_action[user_id] = '-'
-
-
-# loop = asyncio.new_event_loop()
-# loop.create_task(executor.check_status())
 
 print('Бот запущен')
 bot_thread = Thread(target=bot.polling)

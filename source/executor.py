@@ -1,5 +1,3 @@
-import asyncio
-import threading
 import time
 
 from telebot import types
@@ -40,10 +38,13 @@ class Executor:
                 self.data_service.update_streamers_status(starting_streamer)
                 self.data_service.update_streamers_status(ending_streamer)
                 self.notify_users(starting_streamer.keys())
-            time.sleep(5)
+            time.sleep(15)
 
     def subscribe_to_streamer(self, streamer, user):
-        with self.data_service.lock:
-            self.data_service.add_user(streamer, user)
-            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            self.telegram_bot.send_message(int(user), 'подписка оформлена на ' + streamer, reply_markup=markup)
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        if not self.twitch_service.check_existing_streamer(streamer):
+            self.telegram_bot.send_message(int(user), 'стример ' + streamer + ' не найден', reply_markup=markup)
+        else:
+            with self.data_service.lock:
+                self.data_service.add_user(streamer, user)
+                self.telegram_bot.send_message(int(user), 'подписка оформлена на ' + streamer, reply_markup=markup)
