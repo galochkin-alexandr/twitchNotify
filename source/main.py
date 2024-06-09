@@ -4,14 +4,20 @@ import telebot
 from telebot import types
 
 from data_service import DataService
+from settings import get_settings
 from twitch_service import TwitchService
 from executor import Executor
 
-twitch_id = 'syelrqvdt63gsutrz9mdfwbw40refw'
-twitch_key = 'lg2sz3j5805520gw3py0eg5zd1156w'
-telegram_token = '7463673517:AAGkVz4wumFSEIg_Lva7rADQ26kIg2FDp1g'
+"""Достаём конфиги"""
+settings = get_settings()
 
-data_service = DataService('../data/streamers.txt', '../data/users.txt')
+twitch_id = settings.twitch_id
+twitch_key = settings.twitch_key
+telegram_token = settings.telegram_token
+path_to_strimers_file = settings.path_to_strimers_file
+path_to_users_file = settings.path_to_users_file
+
+data_service = DataService(path_to_strimers_file, path_to_users_file)
 
 twitch_service = TwitchService(twitch_id, twitch_key)
 bot = telebot.TeleBot(telegram_token)
@@ -46,6 +52,7 @@ def get_text_messages(message):
             if users_action[user_id] == 'I':
                 executor.subscribe_to_streamer(message.text, user_id)
                 users_action[user_id] = '-'
+
 
 print('Бот запущен')
 bot_thread = Thread(target=bot.polling)
