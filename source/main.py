@@ -14,10 +14,10 @@ settings = get_settings()
 twitch_id = settings.twitch_id
 twitch_key = settings.twitch_key
 telegram_token = settings.telegram_token
-path_to_strimers_file = settings.path_to_strimers_file
+path_to_streamers_file = settings.path_to_streamers_file
 path_to_users_file = settings.path_to_users_file
 
-data_service = DataService(path_to_strimers_file, path_to_users_file)
+data_service = DataService(path_to_streamers_file, path_to_users_file)
 
 twitch_service = TwitchService(twitch_id, twitch_key)
 bot = telebot.TeleBot(telegram_token)
@@ -32,7 +32,8 @@ def start(message):
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
     btn1 = types.KeyboardButton("Подписаться на стримера")
-    markup.add(btn1)
+    btn2 = types.KeyboardButton("Отписаться от стримера")
+    markup.add(btn1, btn2)
     bot.send_message(user_id, "Привет", reply_markup=markup)
 
 
@@ -51,6 +52,9 @@ def get_text_messages(message):
         if user_id in users_action:
             if users_action[user_id] == 'I':
                 executor.subscribe_to_streamer(message.text, user_id)
+                users_action[user_id] = '-'
+            if users_action[user_id] == 'D':
+                executor.unsubscribe_to_streamer(message.text, user_id)
                 users_action[user_id] = '-'
 
 

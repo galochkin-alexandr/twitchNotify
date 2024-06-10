@@ -192,13 +192,27 @@ class DataService:
         return result
 
     def update_streamers_status(self, change_dict):
-        for current_streamer in change_dict:
+        for current_streamer, current_status in change_dict.items():
             update_streamer_status = f"""
                 UPDATE streamers
-                SET status = {change_dict.get(current_streamer)}
+                SET status = {current_status}
                 WHERE login = '{current_streamer}'
             """
             self.execute_query(update_streamer_status)
+
+    def delete_user_for_streamer(self, streamer, user):
+        streamer_id = self.get_streamer_id(streamer)
+        if streamer_id is None:
+            return False
+        user_id = self.get_user_id(user)
+        if user_id is None:
+            return False
+        delete_users_to_streamers_link_query = f"""
+            DELETE FROM users_to_streamers_link
+            WHERE user_id = {user_id} AND streamer_id = {streamer_id}
+        """
+        self.execute_query(delete_users_to_streamers_link_query)
+        return True
 
     def drop_table(self, table_name):
         drop_table_query = """ DROP table """ + table_name
